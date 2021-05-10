@@ -1,5 +1,6 @@
 const { Connection, PublicKey } = require('@solana/web3.js');
 const { Market } =require('@project-serum/serum');
+const Response = require("../modules/response.class");
 
 const serumProgramId = "9xQeWvG816bUx9EPjHmaT23yvVM2ZWbrrpZb9PusVFin";
 const methods = {
@@ -17,6 +18,7 @@ const methods = {
         return marketInfo;
     },
     getTrade:async function(req, res){
+        let response = new Response();
         const marketInfo = module.exports.getMarketName(req.params.marketAddress);
         let trades = [];
         if(marketInfo){
@@ -37,7 +39,9 @@ const methods = {
                 time: 0
             }));
         }
-        return trades;
+        response.success = true;
+        response.data = trades;
+        return response;
     }
 }
 
