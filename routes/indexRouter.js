@@ -3,9 +3,9 @@ const router = express.Router();
 const controller = require("../controllers/indexController");
 const asyncHandler = require('../middleware/asyncHandler');
 
-router.get('/',
+router.get('/price/:coin',
   asyncHandler(async (req, res, next) => {
-    res.send("200");
+    res.send(await controller.getPrice(req, res));
   })
 );
 
