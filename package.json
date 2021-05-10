@@ -15,5 +15,12 @@
   "bugs": {
     "url": "https://github.com/tolui/api.dex.mn/issues"
   },
-  "homepage": "https://github.com/tolui/api.dex.mn#readme"
+  "homepage": "https://github.com/tolui/api.dex.mn#readme",
+  "dependencies": {
+    "@project-serum/serum": "^0.13.34",
+    "@solana/web3.js": "^1.10.0",
+    "dotenv": "^9.0.1",
+    "express": "^4.17.1",
+    "helmet": "^4.6.0"
+  }
 }

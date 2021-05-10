@@ -1,0 +1,7 @@
+node_modules
+build
+npm-debug.log
+.DS_Store
+fireBaseAdminSdk.json
+.env
+.package-lock.json
