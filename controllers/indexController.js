@@ -58,7 +58,7 @@ const methods = {
         const coinInfo = module.exports.getCoinInfo(req.params.coin);
         if(coinInfo){
             const connection = await module.exports.connection();
-            let marketAddress = new PublicKey(marketInfo.address);
+            let marketAddress = new PublicKey(coinInfo.marketAddress);
             let marketProgramId = new PublicKey(serumProgramId);
             let market = await Market.load(connection, marketAddress, {}, marketProgramId);
             let fills = await market.loadFills(connection, 10000);
