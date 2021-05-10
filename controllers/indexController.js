@@ -11,7 +11,7 @@ const methods = {
     },
     getMarketName: function(marketAddress){
         const marketInfos = [
-            {address: "C1EuT9VokAKLiW7i2ASnZUvxDoKuKkCpDDeNxAptuNe4", name:"QUEST/USDT"}
+            {address: "7QwEMFeKS8mPACndc9EzpgoqKbQhpBm1N4JCtzjGEyR7", name:"QUEST/USDT"}
         ];
         const marketInfo = marketInfos.find(srch=>srch.address == marketAddress);
         return marketInfo;
