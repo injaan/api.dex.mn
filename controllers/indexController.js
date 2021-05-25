@@ -96,7 +96,7 @@ const methods = {
                 orderbook.bids.push({price: price, size: size});
             }
             for (let order of asks) {
-                orderbook.bids.ask({price: order.price, size: order.size});
+                orderbook.bids.ask.push({price: order.price, size: order.size});
             }
             orderbook.market = marketInfo.pair;
             orderbook.marketAddress = marketInfo.address;
