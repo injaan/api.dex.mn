@@ -9,6 +9,12 @@ router.get('/price/:coin',
   })
 );
 
+router.get('/orderbooks/:pair',
+  asyncHandler(async (req, res, next) => {
+    res.send(await controller.getOrderbook(req, res));
+  })
+);
+
 router.get('/trades/address/:marketAddress',
   asyncHandler(async (req, res, next) => {
     res.send(await controller.getTrade(req, res));

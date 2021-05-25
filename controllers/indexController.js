@@ -19,11 +19,17 @@ const methods = {
         }
         return coins[name];
     },
-    getMarketInfo: function(marketAddress){
+    getMarketInfo: function(marketAddress=null, bonfidapair=null){
         const marketInfos = [
-            {address: "7QwEMFeKS8mPACndc9EzpgoqKbQhpBm1N4JCtzjGEyR7", pair:"QUEST/USDT"}
+            {address: "7QwEMFeKS8mPACndc9EzpgoqKbQhpBm1N4JCtzjGEyR7", pair:"QUEST/USDT", bonfidapair:"QUESTUSDT"}
         ];
-        const marketInfo = marketInfos.find(srch=>srch.address == marketAddress);
+        let marketInfo;
+        if(marketAddress){
+            marketInfo = marketInfos.find(srch=>srch.address == marketAddress);
+        }
+        if (bonfidapair){
+            marketInfo = marketInfos.find(srch=>srch.bonfidapair == bonfidapair);
+        }
         return marketInfo;
     },
     getTrade:async function(req, res){
@@ -68,6 +74,35 @@ const methods = {
         }
         response.success = true;
         response.data = price;
+        return response;
+    },
+    getOrderbook:async function(req, res){
+        let response = new Response();
+        const marketInfo = module.exports.getMarketInfo(null, req.params.pair);
+        let orderbook = {
+            asks:[],
+            bids:[],
+            market:null,
+            marketAddress:null
+        }
+        if(marketInfo){
+            const connection = await module.exports.connection();
+            let marketAddress = new PublicKey(marketInfo.address);
+            let marketProgramId = new PublicKey(serumProgramId);
+            let market = await Market.load(connection, marketAddress, {}, marketProgramId);
+            let bids = await market.loadBids(connection);
+            let asks = await market.loadAsks(connection);
+            for (let [price, size] of bids.getL2(20)) {
+                orderbook.bids.push({price: price, size: size});
+            }
+            for (let order of asks) {
+                orderbook.bids.ask({price: order.price, size: order.size});
+            }
+            orderbook.market = marketInfo.pair;
+            orderbook.marketAddress = marketInfo.address;
+        }
+        response.success = true;
+        response.data = orderbook;
         return response;
     }
 }
