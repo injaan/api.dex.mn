@@ -21,7 +21,8 @@ const methods = {
     },
     getMarketInfo: function(marketAddress=null, bonfidapair=null){
         const marketInfos = [
-            {address: "7QwEMFeKS8mPACndc9EzpgoqKbQhpBm1N4JCtzjGEyR7", pair:"QUEST/USDT", bonfidapair:"QUESTUSDT"}
+            {address: "7QwEMFeKS8mPACndc9EzpgoqKbQhpBm1N4JCtzjGEyR7", pair:"QUEST/USDT", bonfidapair:"QUESTUSDT"},
+            {address: "HWHvQhFmJB3NUcu1aihKmrKegfVxBEHzwVX6yZCKEsi1", pair:"SOL/USDT", bonfidapair:"SOLUSDT"}
         ];
         let marketInfo;
         if(marketAddress){
