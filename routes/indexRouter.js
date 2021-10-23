@@ -21,4 +21,10 @@ router.get('/trades/address/:marketAddress',
   })
 );
 
+router.get('/ido',
+  asyncHandler(async (req, res, next) => {
+    res.send(await controller.getIdoInfo(req, res));
+  })
+);
+
 module.exports = router;

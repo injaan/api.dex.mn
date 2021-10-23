@@ -105,6 +105,11 @@ const methods = {
         response.success = true;
         response.data = orderbook;
         return response;
+    },
+    getIdoInfo:async function(req, res){
+        let response = new Response();
+        response.success = true;
+        return response;
     }
 }
 
