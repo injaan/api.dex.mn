@@ -1,6 +1,7 @@
 const { Connection, PublicKey } = require('@solana/web3.js');
 const { Market } =require('@project-serum/serum');
 const Response = require("../modules/response.class");
+const moment = require("moment");
 
 const serumProgramId = "9xQeWvG816bUx9EPjHmaT23yvVM2ZWbrrpZb9PusVFin";
 let lastPrices = {};
@@ -106,9 +107,10 @@ const methods = {
         response.data = orderbook;
         return response;
     },
-    getIdoInfo:async function(req, res){
+    getTime:async function(req, res){
         let response = new Response();
         response.success = true;
+        response.data = moment().format("YYYY-MM-DD HH:mm");
         return response;
     }
 }

@@ -21,9 +21,9 @@ router.get('/trades/address/:marketAddress',
   })
 );
 
-router.get('/ido',
+router.get('/getTime',
   asyncHandler(async (req, res, next) => {
-    res.send(await controller.getIdoInfo(req, res));
+    res.send(await controller.getTime(req, res));
   })
 );
 
