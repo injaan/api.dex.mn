@@ -27,4 +27,10 @@ router.get('/getTime',
   })
 );
 
+router.get('/ido',
+  asyncHandler(async (req, res, next) => {
+    res.send(await controller.ido(req, res));
+  })
+);
+
 module.exports = router;

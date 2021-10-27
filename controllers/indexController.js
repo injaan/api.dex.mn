@@ -112,6 +112,38 @@ const methods = {
         response.success = true;
         response.data = moment().format("YYYY-MM-DD HH:mm");
         return response;
+    },
+    ido:async function(req, res){
+        let response = new Response();
+        let idoInfoData = {
+            isIDOActive: true,
+            tokenIdoName: "quest",
+            tokenIdoTotalSell: 100000000,
+            tokenIdoPrice: 0.0004,
+            tokenIdoPriceBy: "USDT",
+            minBuyPrice: 2,
+            minBuyPcs: 5000,
+            maxBuyLimit:100000,
+            idoStartDate: "2021-10-23 13:00",
+            idoEndDate: "2021-10-30 16:00",
+            idoStarted: false,
+            idoEnded: false,
+            secondMarketDate: "2021-10-30 16:00",
+            currentTime: moment().format("YYYY-MM-DD HH:mm"),
+            idoAsset: {name:"QUEST Coin", nameSmall:"Quest", mintAddress:"6ybxMQpMgQhtsTLhvHZqk8uqao7kvoexY6e8JmCTqAB1", marketAddress:"7QwEMFeKS8mPACndc9EzpgoqKbQhpBm1N4JCtzjGEyR7"}
+        }
+        const idoStartDate = moment(idoInfoData.idoStartDate).format("YYYY-MM-DD HH:mm:ss");
+        const idoEndDate = moment(idoInfoData.idoEndDate).format("YYYY-MM-DD HH:mm:ss");
+        const now = idoInfoData.currentTime;
+        if(idoStartDate < now){
+            idoInfoData.idoStarted = true;
+        }
+        if(idoEndDate < now){
+            idoInfoData.idoEndDate = true;
+        }
+        response.success = true;
+        response.data = idoInfoData;
+        return response;
     }
 }
 
