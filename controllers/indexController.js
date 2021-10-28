@@ -119,7 +119,7 @@ const methods = {
             isIDOActive: true,
             tokenIdoName: "quest",
             tokenIdoTotalSell: 100000000,
-            tokenIdoPrice: 0.0004,
+            tokenIdoPrice: 0.0008,
             tokenIdoPriceBy: "USDT",
             minBuyPrice: 2,
             minBuyPcs: 5000,
