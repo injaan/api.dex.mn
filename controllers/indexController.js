@@ -122,7 +122,7 @@ const methods = {
             tokenIdoPrice: 0.0008,
             tokenIdoPriceBy: "USDT",
             minBuyPrice: 2,
-            minBuyPcs: 5000,
+            minBuyPcs: 0,
             maxBuyLimit:100000,
             idoStartDate: "2021-10-23 13:00",
             idoEndDate: "2021-10-30 16:00",
@@ -140,6 +140,7 @@ const methods = {
             анхааруулж байна. IDO хийж байгаа койнд тө хөрөнгө оруулсанаар одоо эсвэл ирээдүйд ямар нэг санхүүгийн ашиг хүртэх баталгаа өгөхгүй бөгөөд та гарч болох
             эрсдэлийг 100% өөрөө хариуцах болно.`
         }
+        idoInfoData.minBuyPcs = (idoInfoData.minBuyPrice / idoInfoData.tokenIdoPrice);
         const idoStartDate = moment(idoInfoData.idoStartDate).format("YYYY-MM-DD HH:mm:ss");
         const idoEndDate = moment(idoInfoData.idoEndDate).format("YYYY-MM-DD HH:mm:ss");
         const now = idoInfoData.currentTime;
