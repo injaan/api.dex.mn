@@ -124,7 +124,7 @@ const methods = {
             minBuyPrice: 2,
             minBuyPcs: 0,
             maxBuyLimit:100000,
-            idoStartDate: "2021-11-11 11:00",
+            idoStartDate: "2021-11-11 11:11",
             idoEndDate: "2021-11-21 21:21",
             idoStarted: false,
             idoEnded: false,
