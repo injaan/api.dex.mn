@@ -8,7 +8,7 @@ let lastPrices = {};
 const methods = {
     connection: async function(){
         //const url = "https://api.mainnet-beta.solana.com";
-        const url = "https://fragrant-old-brook.solana-mainnet.quiknode.pro";
+        const url = "https://fragrant-old-brook.solana-mainnet.quiknode.pro/6fbf0bdaa31508f427cc4f45aa2e17b8a9c30a26/";
         const connection = new Connection(url, 'recent')
         const version = await connection.getVersion()
         return connection
@@ -80,33 +80,38 @@ const methods = {
         return response;
     },
     getOrderbook:async function(req, res){
-        let response = new Response();
-        const marketInfo = module.exports.getMarketInfo(null, req.params.pair);
-        let orderbook = {
-            asks:[],
-            bids:[],
-            market:null,
-            marketAddress:null
-        }
-        if(marketInfo){
-            const connection = await module.exports.connection();
-            let marketAddress = new PublicKey(marketInfo.address);
-            let marketProgramId = new PublicKey(serumProgramId);
-            let market = await Market.load(connection, marketAddress, {}, marketProgramId);
-            let bids = await market.loadBids(connection);
-            let asks = await market.loadAsks(connection);
-            for (let [price, size] of bids.getL2(20)) {
-                orderbook.bids.push({price: price, size: size});
+        try {
+            let response = new Response();
+            const marketInfo = module.exports.getMarketInfo(null, req.params.pair);
+            let orderbook = {
+                asks:[],
+                bids:[],
+                market:null,
+                marketAddress:null
             }
-            for (let order of asks) {
-                orderbook.asks.push({price: order.price, size: order.size});
+            if(marketInfo){
+                const connection = await module.exports.connection();
+                let marketAddress = new PublicKey(marketInfo.address);
+                let marketProgramId = new PublicKey(serumProgramId);
+                let market = await Market.load(connection, marketAddress, {}, marketProgramId);
+                let bids = await market.loadBids(connection);
+                let asks = await market.loadAsks(connection);
+                for (let [price, size] of bids.getL2(20)) {
+                    orderbook.bids.push({price: price, size: size});
+                }
+                for (let order of asks) {
+                    orderbook.asks.push({price: order.price, size: order.size});
+                }
+                orderbook.market = marketInfo.pair;
+                orderbook.marketAddress = marketInfo.address;
             }
-            orderbook.market = marketInfo.pair;
-            orderbook.marketAddress = marketInfo.address;
+            response.success = true;
+            response.data = orderbook;
+            return response;
+        } catch(ex){
+            console.log(ex)
+            return null
         }
-        response.success = true;
-        response.data = orderbook;
-        return response;
     },
     getTime:async function(req, res){
         let response = new Response();
