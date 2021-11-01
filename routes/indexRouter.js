@@ -33,4 +33,10 @@ router.get('/ido',
   })
 );
 
+router.get('/idotest',
+  asyncHandler(async (req, res, next) => {
+    res.send(await controller.idoTest(req, res));
+  })
+);
+
 module.exports = router;

@@ -113,6 +113,47 @@ const methods = {
         response.data = moment().format("YYYY-MM-DD HH:mm");
         return response;
     },
+    idoTest:async function(req, res){
+        let response = new Response();
+        let idoInfoData = {
+            isIDOActive: true,
+            tokenIdoName: "quest",
+            tokenIdoTotalSell: 100000000,
+            tokenIdoPrice: 0.0008,
+            tokenIdoPriceBy: "USDT",
+            minBuyPrice: 2,
+            minBuyPcs: 0,
+            maxBuyLimit:100000,
+            idoStartDate: "2021-11-01 11:11",
+            idoEndDate: "2021-11-21 21:21",
+            idoStarted: false,
+            idoEnded: false,
+            secondMarketDate: "2021-11-22 22:22",
+            currentTime: moment().format("YYYY-MM-DD HH:mm"),
+            idoAsset: {name:"QUEST Coin", nameSmall:"Quest", mintAddress:"6ybxMQpMgQhtsTLhvHZqk8uqao7kvoexY6e8JmCTqAB1", marketAddress:"7QwEMFeKS8mPACndc9EzpgoqKbQhpBm1N4JCtzjGEyR7"},
+            description: `TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST Quest койн нь Монголын анхны GameFi болон DeFi платформууд дээр ашиглагдах хэрэглээний токен юм. Quest төслийн багийнхан Coin Chest хэмээх сонирхолтой төслийг
+            эхлүүлэхээр хөгжүүлэлтийн зардалд зарцуулах хөрөнгийг олон нийтээс татан төвлөрүүлэхээр Монголдоо анх удаа төвлөрсөн бус арилжааны биржээр дамжуулан IDO хийж байна. Уг төслийн талаар дэлгэрэнгүй мэдээллийг <a href="https://questcoin.org" target="_blank">https://questcoin.org</a> хаягаар аваарай. <a href="https://questcoin.gitbook.io/quest-coin/khereglegchiin-garyn-avlaga/ido-d-orolcokh-zaavar" target="_blank">IDO -оролцох заавар</a> болон <a href="https://questcoin.gitbook.io/quest-coin/khereglegchiin-garyn-avlaga/khetevch-neekh" target="_blank">Solana хэтэвч үүсгэх, цэнэглэх болон Dex.mn арилжааны бирж дээр арилжаа хийх зааврыг</a> үзнэ үү`,
+            agreement: `Dex.mn арилжааны бирж нь хөндлөнгийн оролцогчгүй 100% төвлөрсөн бус ажиллагаатай. 
+            Бирж дээр хийгдэж буй арилжаа нь нэг хүний хэтэвчээс нөгөө хүний хэтэвчрүү шууд P2P зарчмаар хийгддэг бөгөөд таны хэтэвчинд буй крипто 
+            ассетуудын удирдлага нь таны 100% мэдэлд байх болно. Таны хэтэвчны мэдээлэл, үлдэгдэл, зарцуулалт зэрэг үйлдлүүд нь таны 
+            баталгаажуулалтаар Solana блокчэйн сүлжээн дээр явагдаж байгаа бөгөөд эдгээр үйлдлүүдэд бид ямар ч хариуцлага хүлээхгүй болохыг 
+            анхааруулж байна. IDO хийж байгаа койнд тө хөрөнгө оруулсанаар одоо эсвэл ирээдүйд ямар нэг санхүүгийн ашиг хүртэх баталгаа өгөхгүй бөгөөд та гарч болох
+            эрсдэлийг 100% өөрөө хариуцах болно.`
+        }
+        idoInfoData.minBuyPcs = (idoInfoData.minBuyPrice / idoInfoData.tokenIdoPrice);
+        const idoStartDate = moment(idoInfoData.idoStartDate).format("YYYY-MM-DD HH:mm:ss");
+        const idoEndDate = moment(idoInfoData.idoEndDate).format("YYYY-MM-DD HH:mm:ss");
+        const now = idoInfoData.currentTime;
+        if(idoStartDate < now){
+            idoInfoData.idoStarted = true;
+        }
+        if(idoEndDate < now){
+            idoInfoData.idoEndDate = true;
+        }
+        response.success = true;
+        response.data = idoInfoData;
+        return response;
+    },
     ido:async function(req, res){
         let response = new Response();
         let idoInfoData = {
