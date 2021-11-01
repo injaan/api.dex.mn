@@ -7,8 +7,8 @@ const serumProgramId = "9xQeWvG816bUx9EPjHmaT23yvVM2ZWbrrpZb9PusVFin";
 let lastPrices = {};
 const methods = {
     connection: async function(){
-        //const url = "https://api.mainnet-beta.solana.com";
-        const url = "https://fragrant-old-brook.solana-mainnet.quiknode.pro/6fbf0bdaa31508f427cc4f45aa2e17b8a9c30a26/";
+        const url = "https://api.mainnet-beta.solana.com";
+        //const url = "https://fragrant-old-brook.solana-mainnet.quiknode.pro/6fbf0bdaa31508f427cc4f45aa2e17b8a9c30a26/";
         const connection = new Connection(url, 'recent')
         const version = await connection.getVersion()
         return connection
