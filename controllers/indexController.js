@@ -80,8 +80,8 @@ const methods = {
         return response;
     },
     getOrderbook:async function(req, res){
+        let response = new Response();
         try {
-            let response = new Response();
             const marketInfo = module.exports.getMarketInfo(null, req.params.pair);
             let orderbook = {
                 asks:[],
@@ -110,7 +110,7 @@ const methods = {
             return response;
         } catch(ex){
             console.log(ex)
-            return null
+            return response;
         }
     },
     getTime:async function(req, res){
