@@ -122,7 +122,9 @@ const methods = {
     idoTest:async function(req, res){
         let response = new Response();
         let idoInfoData = {
-            isIDOActive: true,
+            isIDOActive: false,
+            sellDisabled: false,
+            buyDisabled: false,
             tokenIdoName: "quest",
             tokenIdoTotalSell: 100000000,
             tokenIdoPrice: 0.0008,
@@ -164,6 +166,8 @@ const methods = {
         let response = new Response();
         let idoInfoData = {
             isIDOActive: true,
+            sellDisabled: false,
+            buyDisabled: false,
             tokenIdoName: "quest",
             tokenIdoTotalSell: 100000000,
             tokenIdoPrice: 0.0008,
