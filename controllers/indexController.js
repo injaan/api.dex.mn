@@ -178,7 +178,7 @@ const methods = {
             idoStartDate: "2021-11-11 11:11",
             idoEndDate: "2021-11-21 21:21",
             idoStarted: false,
-            idoEnded: false,
+            idoEnded: true,
             secondMarketDate: "2021-11-22 22:22",
             currentTime: moment().format("YYYY-MM-DD HH:mm"),
             idoAsset: {name:"QUEST Coin", nameSmall:"Quest", mintAddress:"6ybxMQpMgQhtsTLhvHZqk8uqao7kvoexY6e8JmCTqAB1", marketAddress:"7QwEMFeKS8mPACndc9EzpgoqKbQhpBm1N4JCtzjGEyR7"},
