@@ -166,8 +166,8 @@ const methods = {
         let response = new Response();
         let idoInfoData = {
             isIDOActive: false,
-            sellDisabled: true,
-            buyDisabled: true,
+            sellDisabled: false,
+            buyDisabled: false,
             tokenIdoName: "quest",
             tokenIdoTotalSell: 100000000,
             tokenIdoPrice: 0.0008,
