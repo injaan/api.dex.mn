@@ -165,9 +165,9 @@ const methods = {
     ido:async function(req, res){
         let response = new Response();
         let idoInfoData = {
-            isIDOActive: true,
-            sellDisabled: false,
-            buyDisabled: false,
+            isIDOActive: false,
+            sellDisabled: true,
+            buyDisabled: true,
             tokenIdoName: "quest",
             tokenIdoTotalSell: 100000000,
             tokenIdoPrice: 0.0008,
