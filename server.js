@@ -5,6 +5,9 @@ const path = require('path');
 var cors = require('cors')
 const port = process.env.PORT || '3001';
 
+// const airdrop = require("./controllers/airdrop");
+// airdrop.checkAirdropped()
+
 //routes
 const indexRouter = require('./routes/indexRouter');
 
