@@ -213,9 +213,10 @@ const methods = {
             const mailText = `
                 From name: ${req.body.name}<br>
                 From email: ${req.body.email}<br>
+                Subject: ${req.body.subject}<br>
                 Content: ${req.body.content}<br>
             `
-            utils.sendMail("Contact Form Data", mailText, mailText, 'info@questcoin.org');
+            utils.sendMail("Contact Form Data", mailText, mailText, 'info@dex.mn');
             response.success = true;
         } else {
             response.success = false;
