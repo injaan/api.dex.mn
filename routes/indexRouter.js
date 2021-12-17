@@ -39,4 +39,10 @@ router.get('/idotest',
   })
 );
 
+router.post('/contactForm',
+  asyncHandler(async (req, res, next) => {
+    res.send(await controller.contactForm(req, res));
+  })
+);
+
 module.exports = router;

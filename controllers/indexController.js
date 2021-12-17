@@ -1,6 +1,7 @@
 const { Connection, PublicKey } = require('@solana/web3.js');
 const { Market } =require('@project-serum/serum');
 const Response = require("../modules/response.class");
+const utils = require('../modules/utils');
 const moment = require("moment");
 
 const serumProgramId = "9xQeWvG816bUx9EPjHmaT23yvVM2ZWbrrpZb9PusVFin";
@@ -203,6 +204,23 @@ const methods = {
         }
         response.success = true;
         response.data = idoInfoData;
+        return response;
+    },
+    contactForm: async function(req,res){
+        let response = new Response();
+        const captchaVerify = await utils.verifyCaptcha(req.body.captcha)
+        if(captchaVerify){
+            const mailText = `
+                From name: ${req.body.name}<br>
+                From email: ${req.body.email}<br>
+                Content: ${req.body.content}<br>
+            `
+            utils.sendMail("Contact Form Data", mailText, mailText, 'info@questcoin.org');
+            response.success = true;
+        } else {
+            response.success = false;
+            response.msg = "captcha error";
+        }
         return response;
     }
 }
