@@ -19,9 +19,9 @@ const methods = {
             return null;
         }
     },
-    savefile(text){
+    saveObjectTofile(object, path, filename){
         return new Promise((resolve)=>{
-            fs.writeFile('./save.txt', text.toString(), ()=>{
+            fs.writeFile(path+'/'+filename, JSON.stringify(object), ()=>{
                 resolve(true);
             });
         })

@@ -10,6 +10,7 @@ const port = process.env.PORT || '3001';
 
 //routes
 const indexRouter = require('./routes/indexRouter');
+const stakeRouter = require('./routes/stakeRouter');
 
 var corsOptions = {
     origin: ['https://dex.mn', 'https://wallet.dex.mn', "http://localhost:3000", "https://localhost:3000", "https://trade.paynow.mn", "https://test.dex.mn"],
@@ -24,6 +25,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
+app.use('/stake', stakeRouter);
 
 app.listen(port, () => {
     console.log(`app listening on port ${port}!`) 
