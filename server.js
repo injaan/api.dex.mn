@@ -4,7 +4,8 @@ const helmet = require('helmet');
 const path = require('path');
 var cors = require('cors')
 const port = process.env.PORT || '3001';
-
+const dbinit = require('./db/init');
+dbinit();
 // const airdrop = require("./controllers/airdrop");
 // airdrop.checkAirdropped()
 

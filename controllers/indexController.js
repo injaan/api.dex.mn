@@ -3,6 +3,7 @@ const { Market } =require('@project-serum/serum');
 const Response = require("../modules/response.class");
 const utils = require('../modules/utils');
 const moment = require("moment");
+const models = require('../db/models');
 
 const serumProgramId = "9xQeWvG816bUx9EPjHmaT23yvVM2ZWbrrpZb9PusVFin";
 let lastPrices = {};
@@ -222,6 +223,15 @@ const methods = {
             response.success = false;
             response.msg = "captcha error";
         }
+        return response;
+    },
+    swapLog: async function(req,res){
+        let response = new Response();
+        await models.SwapLog({
+            wallet: req.body.wallet,
+            txn: req.body.txn
+        }).save();
+        response.success = true;
         return response;
     }
 }

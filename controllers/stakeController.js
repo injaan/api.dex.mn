@@ -1,6 +1,7 @@
 const Response = require("../modules/response.class");
 const utils = require('../modules/utils');
 const moment = require("moment");
+const models = require('../db/models');
 
 const methods = {
     test:async function(req, res){
@@ -9,7 +10,10 @@ const methods = {
             hello:"world",
             world:"hello"
         }
-        await utils.saveObjectTofile(obj, './swap-routes/', 'test.json');
+        await models.Test({
+            test:"hello world test"
+        }).save();
+        response.data = obj;
         response.success = true;
         return response;
     },
