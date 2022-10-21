@@ -1,6 +1,7 @@
 const axios = require("axios");
 const fs = require('fs');
 const nodemailer = require("nodemailer");
+
 const methods = {
     get:async function(address){
         const request = axios.create({
@@ -80,6 +81,17 @@ const methods = {
     },
     formUrlEncoded: function (x) {
         return Object.keys(x).reduce((p, c) => p + `&${c}=${encodeURIComponent(x[c])}`, '')
+    },
+    throwErr: function(msg, code=400, throwThisErr=true){
+        let newErr = new Error(msg);
+        newErr.status = code;
+        newErr.name = msg;
+        newErr.msg = msg;
+        if(throwThisErr){
+            throw newErr;
+        } else {
+            return newErr;
+        }
     }
 }
 

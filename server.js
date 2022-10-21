@@ -12,6 +12,7 @@ dbinit();
 //routes
 const indexRouter = require('./routes/indexRouter');
 const stakeRouter = require('./routes/stakeRouter');
+const proposalRouter = require('./routes/proposalRouter');
 
 var corsOptions = {
     origin: ['https://dex.mn', 'https://wallet.dex.mn', "http://localhost:3000", "https://localhost:3000", "https://trade.paynow.mn", "https://test.dex.mn"],
@@ -27,6 +28,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
 app.use('/stake', stakeRouter);
+app.use('/proposal', proposalRouter);
 
 app.listen(port, () => {
     console.log(`app listening on port ${port}!`) 
