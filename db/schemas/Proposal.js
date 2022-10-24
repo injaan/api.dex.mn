@@ -1,6 +1,8 @@
 const mongoose = require('mongoose');
 const schema = new mongoose.Schema({
     signer:{type: String},
+    pubkey:{type: String, required:true, unique:true},
+    secretkey:{type:String, required:true},
     signature:{type: String},
     title: {type: String, required:true},
     body:{type: String, required:true},
@@ -9,7 +11,7 @@ const schema = new mongoose.Schema({
         {
             title: {type:String, required:true},
             pubkey:{type:String, required:true, unique:true},
-            secret:{type:String, required:true, unique:true}
+            secret:{type:String, required:true}
         }
     ], required:true},
     status:{type: String, default:'pending', enum:['pending', 'new', 'voting', 'approved', 'cancelled']},
@@ -24,11 +26,11 @@ const schema = new mongoose.Schema({
 schema.method({
     getSafe(){
         let transformed = {};
-        const fields = ['id','signer', 'signature', 'title', 'body', 'budget', 'options', 'status', 'logs', 'createdAt', 'updatedAt'];
+        const fields = ['id','signer', 'pubkey', 'signature', 'title', 'body', 'budget', 'options', 'status', 'logs', 'createdAt', 'updatedAt'];
         fields.forEach((field) => {
           transformed[field] = this[field];
         });
-        transformed['options'] = this['options'].map(op=>({title:op.title, pbukey:op.pubkey}));
+        transformed['options'] = this['options'].map(op=>({title:op.title, pubkey:op.pubkey}));
         return transformed;
     }
 })

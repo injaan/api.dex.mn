@@ -1,3 +1,4 @@
+const bs58 = require('bs58');
 const {
     Keypair
 } = require('@solana/web3.js');
@@ -8,6 +9,9 @@ const methods = {
     },
     validateSignature:async function(signature){
         return '';
+    },
+    secretToBase58:function(secret){
+        return bs58.encode(secret);
     }
 }
 module.exports = methods;
