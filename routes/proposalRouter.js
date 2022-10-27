@@ -12,6 +12,12 @@ router.get('/',
   })
 );
 
+router.get('/configs',
+  asyncHandler(async (req, res, next) => {
+    res.send(await controller.getProposalConfigs(req, res));
+  })
+);
+
 router.post('/',
   [
     check('title').isString(),

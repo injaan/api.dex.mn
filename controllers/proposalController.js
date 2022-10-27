@@ -9,6 +9,14 @@ const methods = {
         response.success = true;
         return response;
     },
+    getProposalConfigs:async function(req, res){
+        let response = new Response();
+        response.success = true;
+        response.data = {
+            daoRef:process.env.DAO_REF
+        }
+        return response;
+    },
     newProposal:async function(req, res){
         let response = new Response();
         const options = req.body.options.map(op=>{

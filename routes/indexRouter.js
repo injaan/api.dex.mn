@@ -46,6 +46,7 @@ router.post('/contactForm',
   })
 );
 
+
 router.post('/log',
   [
     check('wallet').isString(),
