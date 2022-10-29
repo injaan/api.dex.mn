@@ -39,6 +39,22 @@ const methods = {
         response.success = true;
         response.data = proposal.getSafe();
         return response;
+    },
+    updateSignature:async function(req, res){
+        let response = new Response();
+        const proposal = await models.Proposal.findById(req.body.proposal);
+        if(!proposal){
+            utils.throwErr("Proposal not found", 404);
+            return;
+        }
+        //validate signature
+        if(!await web3.validateSignatureForNewProposal(req.body.signature, proposal._id)){
+            utils.throwErr("Invalid signature", 400);
+            return;
+        }
+        await proposal.updateOne({signature: req.body.signature});
+        response.success = true;
+        return response;
     }
 }
 

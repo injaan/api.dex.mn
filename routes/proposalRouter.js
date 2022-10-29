@@ -38,4 +38,21 @@ router.post('/',
   })
 );
 
+router.post('/updateSignature',
+  [
+    check('proposal').isString(),
+    check('signature').isString()
+  ],
+  asyncHandler(
+    async (req, res, next) => {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        const err = utils.throwErr('validation_error', 422, false);
+        errorHandler(err, res, 422, errors.array());
+        return;
+      }
+      res.send(await controller.updateSignature(req, res));
+  })
+);
+
 module.exports = router;
