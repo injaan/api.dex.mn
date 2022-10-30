@@ -2,6 +2,7 @@ const Response = require("../modules/response.class");
 const utils = require('../modules/utils');
 const web3 = require('../modules/web3');
 const models = require('../db/models');
+const moment = require('moment');
 
 const methods = {
     test:async function(req, res){
@@ -9,11 +10,29 @@ const methods = {
         response.success = true;
         return response;
     },
+    getProposalList:async function(req, res){
+        let response = new Response();
+        response.success = true;
+        response.data = await models.Proposal.find({status:{$ne:'pending'}}, {_id:1, title:1, date:1, status:1}).sort({createdAt:-1})
+        return response;
+    },
+    getProposal:async function(req, res){
+        let response = new Response();
+        response.success = true;
+        const proposal = await models.Proposal.findById(req.params.id);
+        if(!proposal){
+            utils.throwErr("Proposal not found", 404);
+            return;
+        }
+        response.data = proposal.getSafe();
+        return response;
+    },
     getProposalConfigs:async function(req, res){
         let response = new Response();
         response.success = true;
         response.data = {
-            daoRef:process.env.DAO_REF
+            daoRef:process.env.DAO_REF,
+            newPropReqQuest:process.env.DAO_NEW_PROPOSAL_REQUIRED_QUEST
         }
         return response;
     },
@@ -33,11 +52,13 @@ const methods = {
             pubkey:proposalSecret.publicKey.toBase58(),
             secretkey: web3.secretToBase58(proposalSecret.secretKey),
             body:req.body.body,
+            date:req.body.date,
             budget:req.body.budget,
             options
         }).save();
         response.success = true;
         response.data = proposal.getSafe();
+        await models.Proposal.deleteMany({status:'pending',createdAt:{$lt:moment().subtract(1, 'day').toDate()}}); //clearing old non active records
         return response;
     },
     updateSignature:async function(req, res){
@@ -48,11 +69,11 @@ const methods = {
             return;
         }
         //validate signature
-        if(!await web3.validateSignatureForNewProposal(req.body.signature, proposal._id)){
+        if(!await web3.validateSignatureForNewProposal(req.body.signature, proposal)){
             utils.throwErr("Invalid signature", 400);
             return;
         }
-        await proposal.updateOne({signature: req.body.signature});
+        await proposal.updateOne({signature: req.body.signature, status:'new'});
         response.success = true;
         return response;
     }

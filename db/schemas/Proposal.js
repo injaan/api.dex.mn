@@ -5,6 +5,7 @@ const schema = new mongoose.Schema({
     pubkey:{type: String, required:true, unique:true},
     secretkey:{type:String, required:true},
     signature:{type: String},
+    date:{type:Date},
     title: {type: String, required:true},
     body:{type: String, required:true},
     budget:{type: Number, deafult:0},

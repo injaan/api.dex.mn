@@ -8,7 +8,13 @@ const errorHandler = require('../middleware/errorHandler');
 
 router.get('/',
   asyncHandler(async (req, res, next) => {
-    res.send(await controller.test(req, res));
+    res.send(await controller.getProposalList(req, res));
+  })
+);
+
+router.get('/:id',
+  asyncHandler(async (req, res, next) => {
+    res.send(await controller.getProposal(req, res));
   })
 );
 

@@ -7,6 +7,7 @@ const {
     Keypair
 } = require('@solana/web3.js');
 const MEMO_PROGRAM_ID = new PublicKey('MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr');
+const QUEST_MINT = (process.env.NODE_ENV == 'production')?'6ybxMQpMgQhtsTLhvHZqk8uqao7kvoexY6e8JmCTqAB1':'AynrJdeB1RfXDhkPJw6PkP3BL4sKm3fehme6A8NcHpKK'
 const methods = {
     connection:null,
     connect: async function(){
@@ -52,7 +53,7 @@ const methods = {
         });
         return memo;
     },
-    validateSignatureForNewProposal: async function(signature, proposalId){
+    validateSignatureForNewProposal: async function(signature, proposal){
         const connection = await module.exports.connect();
         let txn = await connection.getParsedTransaction(signature, {commitment:'confirmed'});
         if(!txn){
@@ -67,11 +68,20 @@ const methods = {
             return false;
         }
         const idFromMemo = JSON.parse(memo.parsed).QIP;
-        if(idFromMemo != proposalId){
+        if(idFromMemo != proposal.id){
             return false;
         }
-        console.log(idFromMemo)
-        return false;
+        const mainAccPostTokenBal = txn.meta.postTokenBalances.find(srch=>(srch.owner===proposal.pubkey) && (srch.mint===QUEST_MINT));
+        if(!mainAccPostTokenBal || mainAccPostTokenBal.uiTokenAmount.amount != process.env.DAO_NEW_PROPOSAL_REQUIRED_QUEST){
+            return false;
+        }
+        for (let option of proposal.options){
+            const optionAccTokenBal =  txn.meta.postTokenBalances.find(srch=>(srch.owner===option.pubkey) && (srch.mint===QUEST_MINT));
+            if(!optionAccTokenBal){
+                return false;
+            }
+        }
+        return true;
     }
 }
 module.exports = methods;
