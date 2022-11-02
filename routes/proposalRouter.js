@@ -6,17 +6,6 @@ const asyncHandler = require('../middleware/asyncHandler');
 const utils = require('../modules/utils');
 const errorHandler = require('../middleware/errorHandler');
 
-router.get('/',
-  asyncHandler(async (req, res, next) => {
-    res.send(await controller.getProposalList(req, res));
-  })
-);
-
-router.get('/:id',
-  asyncHandler(async (req, res, next) => {
-    res.send(await controller.getProposal(req, res));
-  })
-);
 
 router.get('/configs',
   asyncHandler(async (req, res, next) => {
@@ -58,6 +47,18 @@ router.post('/updateSignature',
         return;
       }
       res.send(await controller.updateSignature(req, res));
+  })
+);
+
+router.get('/',
+  asyncHandler(async (req, res, next) => {
+    res.send(await controller.getProposalList(req, res));
+  })
+);
+
+router.get('/:id',
+  asyncHandler(async (req, res, next) => {
+    res.send(await controller.getProposal(req, res));
   })
 );
 
