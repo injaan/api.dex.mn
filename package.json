@@ -18,9 +18,10 @@
   "homepage": "https://github.com/tolui/api.dex.mn#readme",
   "dependencies": {
     "@project-serum/serum": "^0.13.65",
-    "@solana/spl-token": "^0.3.5",
+    "@solana/spl-token": "^0.3.6",
     "@solana/web3.js": "^1.66.2",
     "axios": "^0.24.0",
+    "bignumber.js": "^9.1.0",
     "bs58": "^5.0.0",
     "cors": "^2.8.5",
     "delay": "^5.0.0",

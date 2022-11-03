@@ -1,11 +1,13 @@
 const bs58 = require('bs58');
 const delay = require('delay');
+const BigNumber = require('bignumber.js');
 const {
     Connection,
     PublicKey,
     clusterApiUrl,
     Keypair
 } = require('@solana/web3.js');
+const { TOKEN_PROGRAM_ID, ASSOCIATED_TOKEN_PROGRAM_ID } = require('@solana/spl-token');
 const MEMO_PROGRAM_ID = new PublicKey('MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr');
 const QUEST_MINT = (process.env.NODE_ENV == 'production')?'6ybxMQpMgQhtsTLhvHZqk8uqao7kvoexY6e8JmCTqAB1':'AynrJdeB1RfXDhkPJw6PkP3BL4sKm3fehme6A8NcHpKK'
 const methods = {
@@ -53,6 +55,29 @@ const methods = {
         });
         return memo;
     },
+    getAssociatedTokenAddress: async function(walletAddress, mintAddress){
+        const walletAddressPubkey = new PublicKey(walletAddress);
+        const mintAddressPubkey = new PublicKey(mintAddress);
+        const tokenAddress = await PublicKey.findProgramAddress(
+          [
+            walletAddressPubkey.toBuffer(),
+            TOKEN_PROGRAM_ID.toBuffer(),
+            mintAddressPubkey.toBuffer(),
+          ],
+          ASSOCIATED_TOKEN_PROGRAM_ID
+        );
+        return tokenAddress[0];
+    },
+    getAccountInfo: async function(address){
+        const pubkey = new PublicKey(address);
+        const connection = await module.exports.connect();
+        const info = await connection.getParsedAccountInfo(pubkey);
+        if(info?.value?.data?.parsed){
+            return info.value.data.parsed;
+        } else {
+            return null;
+        }
+    },
     validateSignatureForNewProposal: async function(signature, proposal){
         const connection = await module.exports.connect();
         let txn = await connection.getParsedTransaction(signature, {commitment:'confirmed'});
@@ -82,6 +107,54 @@ const methods = {
             }
         }
         return true;
+    },
+    validateSignatureForVote: async function(signature, proposalModel){
+        const connection = await module.exports.connect();
+        let txn = await connection.getParsedTransaction(signature, {commitment:'confirmed'});
+        if(!txn){
+            await delay(1000);
+            txn = await connection.getParsedTransaction(signature, {commitment:'confirmed'});
+        }
+        if(!(txn && txn.transaction && txn.transaction.message && txn.transaction.message.instructions.length)){
+            return null;
+        }
+        const memo = txn.transaction.message.instructions.find(instruction=>instruction.programId == MEMO_PROGRAM_ID.toBase58());
+        if(!memo || !memo.parsed){
+            return null;
+        }
+        const idFromMemo = JSON.parse(memo.parsed).QIP;
+        if(!idFromMemo){
+            return null;
+        }
+        const tokenIx = txn.transaction.message.instructions.find(instruction=>instruction.programId == TOKEN_PROGRAM_ID.toBase58());
+        if(!tokenIx){
+            return null;
+        }
+        const proposal = await proposalModel.findById(idFromMemo);
+        if(!proposal){
+            return null;
+        }
+        let voteOption;
+        for(let option of proposal.options){
+            const tokenAcc = await module.exports.getAssociatedTokenAddress(option.pubkey, QUEST_MINT);
+            if(tokenAcc.toBase58() == tokenIx.parsed.info.destination){
+                voteOption = option;
+                break;
+            }
+        }
+        if(!voteOption){
+            return null;
+        }
+        const srcAccInfo = await module.exports.getAccountInfo(tokenIx.parsed.info.source);
+        if(!srcAccInfo){
+            return null;
+        }
+        return {
+            proposal: idFromMemo,
+            votes: BigNumber(tokenIx.parsed.info.amount).div((10**4)).toNumber(),
+            voter:srcAccInfo.info.owner,
+            option: voteOption.pubkey
+        };
     }
 }
 module.exports = methods;

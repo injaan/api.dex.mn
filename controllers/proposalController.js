@@ -76,6 +76,23 @@ const methods = {
         await proposal.updateOne({signature: req.body.signature, status:'new'});
         response.success = true;
         return response;
+    },
+    saveVote:async function(req, res){
+        let response = new Response();
+        const validation = await web3.validateSignatureForVote('4kUPbtiyPAnTVnj7M8jPDQaC58cAtY5jDznqpFNWvB54adiuKfN8DzbyWusp64RuxPCSmHXjeKEGCUGWJQamB1yb', models.Proposal);
+        if(!validation){
+            utils.throwErr("Invalid signature", 400);
+            return;
+        }
+        await new models.Vote({
+            signature:req.body.signature,
+            proposal:validation.proposal,
+            votes:validation.votes,
+            voter:validation.voter,
+            option:validation.option
+        }).save();
+        response.success = true;
+        return response;
     }
 }
 
