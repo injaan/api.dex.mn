@@ -33,6 +33,12 @@ router.post('/',
   })
 );
 
+router.get('/vote/:proposalId',
+  asyncHandler(async (req, res, next) => {
+    res.send(await controller.getVotes(req, res));
+  })
+);
+
 router.post('/vote',
   [
     check('signature').isString()
