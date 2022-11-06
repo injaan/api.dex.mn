@@ -32,7 +32,8 @@ const methods = {
         response.success = true;
         response.data = {
             daoRef:process.env.DAO_REF,
-            newPropReqQuest:process.env.DAO_NEW_PROPOSAL_REQUIRED_QUEST
+            newPropReqQuest:process.env.DAO_NEW_PROPOSAL_REQUIRED_QUEST,
+            daoAdmin:process.env.DAO_ADMIN
         }
         return response;
     },
