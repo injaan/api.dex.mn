@@ -13,7 +13,8 @@ const schema = new mongoose.Schema({
         {
             title: {type:String, required:true},
             pubkey:{type:String, required:true, unique:true},
-            secret:{type:String, required:true}
+            secret:{type:String, required:true},
+            color:{type:String}
         }
     ], required:true},
     status:{type: String, default:'pending', enum:['pending', 'new', 'voting', 'approved', 'cancelled']},
@@ -32,7 +33,7 @@ schema.method({
         fields.forEach((field) => {
           transformed[field] = this[field];
         });
-        transformed['options'] = this['options'].map(op=>({title:op.title, pubkey:op.pubkey}));
+        transformed['options'] = this['options'].map(op=>({title:op.title, pubkey:op.pubkey, color: op.color}));
         return transformed;
     }
 })

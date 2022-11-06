@@ -42,9 +42,10 @@ const methods = {
         const options = req.body.options.map(op=>{
             const keyPair = web3.getKeyPair();
             return {
-                title:op.title,
+                title: op.title,
                 pubkey: keyPair.publicKey.toBase58(),
-                secret: web3.secretToBase58(keyPair.secretKey)
+                secret: web3.secretToBase58(keyPair.secretKey),
+                color: op.color
             }
         });
         const proposalSecret = web3.getKeyPair();
