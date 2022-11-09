@@ -86,27 +86,28 @@ const methods = {
             txn = await connection.getParsedTransaction(signature, {commitment:'confirmed'});
         }
         if(!(txn && txn.transaction && txn.transaction.message && txn.transaction.message.instructions.length)){
-            return false;
+            return {success:false};
         }
         const memo = txn.transaction.message.instructions.find(instruction=>instruction.programId == MEMO_PROGRAM_ID.toBase58());
         if(!memo || !memo.parsed){
-            return false;
+            return {success:false};
         }
         const idFromMemo = JSON.parse(memo.parsed).QIP;
         if(idFromMemo != proposal.id){
-            return false;
+            return {success:false};
         }
         const mainAccPostTokenBal = txn.meta.postTokenBalances.find(srch=>(srch.owner===proposal.pubkey) && (srch.mint===QUEST_MINT));
         if(!mainAccPostTokenBal || mainAccPostTokenBal.uiTokenAmount.amount != process.env.DAO_NEW_PROPOSAL_REQUIRED_QUEST){
-            return false;
+            return {success:false};
         }
         for (let option of proposal.options){
             const optionAccTokenBal =  txn.meta.postTokenBalances.find(srch=>(srch.owner===option.pubkey) && (srch.mint===QUEST_MINT));
             if(!optionAccTokenBal){
-                return false;
+                return {success:false};
             }
         }
-        return true;
+        const signer = txn.transaction.message.accountKeys.find(srch=>srch.signer)
+        return {success:true, signer:signer.pubkey.toBase58()};
     },
     validateSignatureForVote: async function(signature, proposalModel){
         const connection = await module.exports.connect();
@@ -116,23 +117,44 @@ const methods = {
             txn = await connection.getParsedTransaction(signature, {commitment:'confirmed'});
         }
         if(!(txn && txn.transaction && txn.transaction.message && txn.transaction.message.instructions.length)){
-            return null;
+            return {
+                success:false,
+                msg:"invalid signature"
+            };
         }
         const memo = txn.transaction.message.instructions.find(instruction=>instruction.programId == MEMO_PROGRAM_ID.toBase58());
         if(!memo || !memo.parsed){
-            return null;
+            return {
+                success:false,
+                msg:"invalid signature"
+            };
         }
         const idFromMemo = JSON.parse(memo.parsed).QIP;
         if(!idFromMemo){
-            return null;
+            return {
+                success:false,
+                msg:"invalid signature"
+            };
         }
         const tokenIx = txn.transaction.message.instructions.find(instruction=>instruction.programId == TOKEN_PROGRAM_ID.toBase58());
         if(!tokenIx){
-            return null;
+            return {
+                success:false,
+                msg:"invalid signature"
+            };
         }
         const proposal = await proposalModel.findById(idFromMemo);
         if(!proposal){
-            return null;
+            return {
+                success:false,
+                msg:"invalid signature"
+            };
+        }
+        if(proposal.status != 'voting'){
+            return {
+                success:false,
+                msg:"Санал хураалт эхлээгүй эсвэл дууссан байна"
+            };
         }
         let voteOption;
         for(let option of proposal.options){
@@ -143,17 +165,26 @@ const methods = {
             }
         }
         if(!voteOption){
-            return null;
+            return {
+                success:false,
+                msg:"invalid signature"
+            };
         }
         const srcAccInfo = await module.exports.getAccountInfo(tokenIx.parsed.info.source);
         if(!srcAccInfo){
-            return null;
+            return {
+                success:false,
+                msg:"invalid signature"
+            };
         }
         return {
-            proposal: idFromMemo,
-            votes: BigNumber(tokenIx.parsed.info.amount).div((10**4)).toNumber(),
-            voter:srcAccInfo.info.owner,
-            option: voteOption.pubkey
+            success: true,
+            data :{
+                proposal: idFromMemo,
+                votes: BigNumber(tokenIx.parsed.info.amount).div((10**4)).toNumber(),
+                voter:srcAccInfo.info.owner,
+                option: voteOption.pubkey
+            }
         };
     }
 }

@@ -12,8 +12,9 @@ const methods = {
     },
     getProposalList:async function(req, res){
         let response = new Response();
+        const list = await models.Proposal.find({status:{$ne:'pending'}}, {_id:1, title:1, date:1, status:1, signer:1}).sort({createdAt:-1});
         response.success = true;
-        response.data = await models.Proposal.find({status:{$ne:'pending'}}, {_id:1, title:1, date:1, status:1}).sort({createdAt:-1})
+        response.data = list;
         return response;
     },
     getProposal:async function(req, res){
@@ -71,27 +72,29 @@ const methods = {
             return;
         }
         //validate signature
-        if(!await web3.validateSignatureForNewProposal(req.body.signature, proposal)){
+        const sigValidate = await web3.validateSignatureForNewProposal(req.body.signature, proposal);
+        console.log(sigValidate)
+        if(!sigValidate.success){
             utils.throwErr("Invalid signature", 400);
             return;
         }
-        await proposal.updateOne({signature: req.body.signature, status:'new'});
+        await proposal.updateOne({signature: req.body.signature, status:'new', signer: sigValidate.signer});
         response.success = true;
         return response;
     },
     saveVote:async function(req, res){
         let response = new Response();
         const validation = await web3.validateSignatureForVote(req.body.signature, models.Proposal);
-        if(!validation){
-            utils.throwErr("Invalid signature", 400);
+        if(!validation.success){
+            utils.throwErr(validation.msg, 400);
             return;
         }
         const newvote = await new models.Vote({
             signature:req.body.signature,
-            proposal:validation.proposal,
-            votes:validation.votes,
-            voter:validation.voter,
-            option:validation.option
+            proposal:validation.data.proposal,
+            votes:validation.data.votes,
+            voter:validation.data.voter,
+            option:validation.data.option
         }).save();
         console.log(newvote)
         response.data = newvote;
