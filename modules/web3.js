@@ -1,4 +1,6 @@
+const util = require('util');
 const bs58 = require('bs58');
+const nacl = require('tweetnacl');
 const delay = require('delay');
 const BigNumber = require('bignumber.js');
 const {
@@ -186,6 +188,13 @@ const methods = {
                 option: voteOption.pubkey
             }
         };
+    },
+    verifyMessage: function(message, signature, pubkey){
+        const msgData = new util.TextEncoder().encode(message);
+        const signatureBuffer = bs58.decode(signature);
+        const pubKeyBuffer = bs58.decode(pubkey);
+        const verify = nacl.sign.detached.verify(msgData, signatureBuffer, pubKeyBuffer);
+        return verify;
     }
 }
 module.exports = methods;

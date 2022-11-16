@@ -3,6 +3,7 @@ const utils = require('../modules/utils');
 const web3 = require('../modules/web3');
 const models = require('../db/models');
 const moment = require('moment');
+const md5 = require("md5");
 
 const methods = {
     test:async function(req, res){
@@ -73,13 +74,25 @@ const methods = {
         }
         //validate signature
         const sigValidate = await web3.validateSignatureForNewProposal(req.body.signature, proposal);
-        console.log(sigValidate)
         if(!sigValidate.success){
             utils.throwErr("Invalid signature", 400);
             return;
         }
         await proposal.updateOne({signature: req.body.signature, status:'new', signer: sigValidate.signer});
         response.success = true;
+        return response;
+    },
+    cancelProposal:async function(req, res){
+        let response = new Response();
+        const proposal = await models.Proposal.findById(req.body.proposal);
+        if(!proposal){
+            utils.throwErr("Proposal not found", 404);
+            return;
+        }
+        const signData = `${proposal.id}${proposal.title}${proposal.body}${req.body.reason}`;
+        const verify = web3.verifyMessage(md5(signData), req.body.signature, process.env.DAO_ADMIN);
+        await proposal.updateOne({$push: { logs: {message: req.body.reason, date: Date.now()} }, $set:{status:'cancelled'}});
+        response.success = verify;
         return response;
     },
     saveVote:async function(req, res){
