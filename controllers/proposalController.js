@@ -91,8 +91,43 @@ const methods = {
         }
         const signData = `${proposal.id}${proposal.title}${proposal.body}${req.body.reason}`;
         const verify = web3.verifyMessage(md5(signData), req.body.signature, process.env.DAO_ADMIN);
+        if(!verify){
+            utils.throwErr("Signature not verified", 400);
+            return;
+        }
         await proposal.updateOne({$push: { logs: {message: req.body.reason, date: Date.now()} }, $set:{status:'cancelled'}});
-        response.success = verify;
+        response.success = true;
+        return response;
+    },
+    approveProposal:async function(req, res){
+        let response = new Response();
+        const qipAlreadyExists = await models.Proposal.findOne({qip: req.body.qipId});
+        if(qipAlreadyExists){
+            utils.throwErr("QIP ID already assigned", 400);
+            return;
+        }
+        const proposal = await models.Proposal.findById(req.body.proposal.id);
+        if(!proposal){
+            utils.throwErr("Proposal not found", 404);
+            return;
+        }
+        const signData = `${proposal.id}${proposal.title}${proposal.body}${req.body.qipId}`;
+        const verify = web3.verifyMessage(md5(signData), req.body.signature, process.env.DAO_ADMIN);
+        console.log(verify)
+        if(!verify){
+            utils.throwErr("Signature not verified", 400);
+            return;
+        }
+        await proposal.updateOne({$push: { logs: {message: "админ баталгаажуулав", date: Date.now()} }, $set:{
+            qip:req.body.qipId,
+            status:'voting',
+            title: req.body.proposal.title,
+            body: req.body.proposal.body,
+            budget: req.body.proposal.budget,
+            date: new Date(req.body.proposal.date),
+            options: req.body.proposal.options
+        }});
+        response.success = true;
         return response;
     },
     saveVote:async function(req, res){

@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const schema = new mongoose.Schema({
+    qip:{type:Number},
     signer:{type: String},
     daoref:{type: String, default: process.env.DAO_REF},
     pubkey:{type: String, required:true, unique:true},
@@ -29,7 +30,7 @@ const schema = new mongoose.Schema({
 schema.method({
     getSafe(){
         let transformed = {};
-        const fields = ['id','signer', 'pubkey', 'daoref', 'signature', 'title', 'body', 'budget', 'options', 'status', 'logs', 'createdAt', 'updatedAt'];
+        const fields = ['id','signer', 'pubkey', 'daoref', 'signature', 'date', 'title', 'body', 'budget', 'options', 'status', 'logs', 'createdAt', 'updatedAt'];
         fields.forEach((field) => {
           transformed[field] = this[field];
         });

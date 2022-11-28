@@ -90,6 +90,24 @@ router.post('/cancel',
   })
 );
 
+router.post('/approve',
+  [
+    check('proposal').isObject(),
+    check('qipId').isNumeric(),
+    check('signature').isString()
+  ],
+  asyncHandler(
+    async (req, res, next) => {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        const err = utils.throwErr('validation_error', 422, false);
+        errorHandler(err, res, 422, errors.array());
+        return;
+      }
+      res.send(await controller.approveProposal(req, res));
+  })
+);
+
 router.get('/',
   asyncHandler(async (req, res, next) => {
     res.send(await controller.getProposalList(req, res));
