@@ -99,6 +99,23 @@ const methods = {
         response.success = true;
         return response;
     },
+    commentProposal:async function(req, res){
+        let response = new Response();
+        const proposal = await models.Proposal.findById(req.body.proposal);
+        if(!proposal){
+            utils.throwErr("Proposal not found", 404);
+            return;
+        }
+        const signData = `${proposal.id}${proposal.title}${proposal.body}${req.body.comment}`;
+        const verify = web3.verifyMessage(md5(signData), req.body.signature, process.env.DAO_ADMIN);
+        if(!verify){
+            utils.throwErr("Signature not verified", 400);
+            return;
+        }
+        await proposal.updateOne({$push: { logs: {message: req.body.comment, date: Date.now()} }});
+        response.success = true;
+        return response;
+    },
     approveProposal:async function(req, res){
         let response = new Response();
         const qipAlreadyExists = await models.Proposal.findOne({qip: req.body.qipId});
