@@ -22,12 +22,11 @@ var corsOptions = {
 }
 
 if(process.env.INSTANCE_ID == 0){ //check instance is master
-    schedule.scheduleJob('* * * * *', async function(){
-        // const update = await models.Proposal.updateMany({date:{$lte:new Date()}, status:"voting"},{
-        //     status:'completed'
-        // });
-        // console.log(update)
-        console.log(process.env.INSTANCE_ID)
+    schedule.scheduleJob('1 0 * * *', async function(){
+        const update = await models.Proposal.updateMany({date:{$lte:new Date()}, status:"voting"},{
+            status:'completed'
+        });
+        console.log(update)
     });
 }
 
