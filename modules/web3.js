@@ -158,6 +158,15 @@ const methods = {
                 msg:"Санал хураалт эхлээгүй эсвэл дууссан байна"
             };
         }
+        if(new Date(proposal.date) < new Date()){
+            await proposal.updateOne({
+                status:'completed'
+            });
+            return {
+                success:false,
+                msg:"Санал хураалтын хугацаа дууссан байна"
+            };
+        }
         let voteOption;
         for(let option of proposal.options){
             const tokenAcc = await module.exports.getAssociatedTokenAddress(option.pubkey, QUEST_MINT);
@@ -182,7 +191,7 @@ const methods = {
         return {
             success: true,
             data :{
-                proposal: idFromMemo,
+                proposal: proposal,
                 votes: BigNumber(tokenIx.parsed.info.amount).div((10**4)).toNumber(),
                 voter:srcAccInfo.info.owner,
                 option: voteOption.pubkey

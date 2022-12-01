@@ -5,6 +5,8 @@ const path = require('path');
 var cors = require('cors')
 const port = process.env.PORT || '3001';
 const dbinit = require('./db/init');
+const schedule = require('node-schedule');
+const models = require('./db/models');
 dbinit();
 // const airdrop = require("./controllers/airdrop");
 // airdrop.checkAirdropped()
@@ -15,8 +17,18 @@ const stakeRouter = require('./routes/stakeRouter');
 const proposalRouter = require('./routes/proposalRouter');
 
 var corsOptions = {
-    origin: ['https://dex.mn', 'https://wallet.dex.mn', "http://localhost:3000", "https://localhost:3000", "https://trade.paynow.mn", "https://test.dex.mn"],
+    origin: ['https://dex.mn', 'https://wallet.dex.mn', "http://localhost:3000", "https://test.dex.mn"],
     optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
+}
+
+if(process.env.INSTANCE_ID == 0){ //check instance is master
+    schedule.scheduleJob('* * * * *', async function(){
+        // const update = await models.Proposal.updateMany({date:{$lte:new Date()}, status:"voting"},{
+        //     status:'completed'
+        // });
+        // console.log(update)
+        console.log(process.env.INSTANCE_ID)
+    });
 }
 
 var app = express();

@@ -130,7 +130,6 @@ const methods = {
         }
         const signData = `${proposal.id}${proposal.title}${proposal.body}${req.body.qipId}`;
         const verify = web3.verifyMessage(md5(signData), req.body.signature, process.env.DAO_ADMIN);
-        console.log(verify)
         if(!verify){
             utils.throwErr("Signature not verified", 400);
             return;
@@ -156,12 +155,11 @@ const methods = {
         }
         const newvote = await new models.Vote({
             signature:req.body.signature,
-            proposal:validation.data.proposal,
+            proposal:validation.data.proposal.id,
             votes:validation.data.votes,
             voter:validation.data.voter,
             option:validation.data.option
         }).save();
-        console.log(newvote)
         response.data = newvote;
         response.success = true;
         return response;

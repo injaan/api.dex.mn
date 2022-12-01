@@ -18,7 +18,7 @@ const schema = new mongoose.Schema({
             color:{type:String}
         }
     ], required:true},
-    status:{type: String, default:'pending', enum:['pending', 'new', 'voting', 'approved', 'cancelled']},
+    status:{type: String, default:'pending', enum:['pending', 'new', 'voting', 'completed', 'cancelled']},
     logs:{type:[
         {
             message:{type:String, required:true},
@@ -30,7 +30,7 @@ const schema = new mongoose.Schema({
 schema.method({
     getSafe(){
         let transformed = {};
-        const fields = ['id','signer', 'pubkey', 'daoref', 'signature', 'date', 'title', 'body', 'budget', 'options', 'status', 'logs', 'createdAt', 'updatedAt'];
+        const fields = ['id', 'qip','signer', 'pubkey', 'daoref', 'signature', 'date', 'title', 'body', 'budget', 'options', 'status', 'logs', 'createdAt', 'updatedAt'];
         fields.forEach((field) => {
           transformed[field] = this[field];
         });
