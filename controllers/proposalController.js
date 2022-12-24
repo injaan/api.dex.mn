@@ -14,6 +14,7 @@ const methods = {
     getProposalList:async function(req, res){
         let response = new Response();
         const list = await models.Proposal.find({status:{$ne:'pending'}}, {_id:1, title:1, date:1, status:1, signer:1}).sort({createdAt:-1});
+        console.log(list)
         response.success = true;
         response.data = list;
         return response;
