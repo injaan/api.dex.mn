@@ -16,10 +16,7 @@ const methods = {
     connection:null,
     connect: async function(){
         const prodRPCEndpoints = [
-            'https://solana-api.projectserum.com',
-            'https://api.mainnet-beta.solana.com',
-            'https://ssc-dao.genesysgo.net',
-            'https://solana-api.tt-prod.net'
+            'https://light-fittest-shard.solana-mainnet.discover.quiknode.pro/fd0b5df53b17b8ac6755e1ce11e5ebf1a217d523/'
         ]
         //const network = process.env.NODE_ENV==="production"?"mainnet-beta":"devnet";
         const endpoint = process.env.NODE_ENV==="production"?prodRPCEndpoints[0]:clusterApiUrl('devnet');
