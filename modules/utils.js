@@ -62,7 +62,7 @@ const methods = {
         });
         return new Promise((resolve)=>{
             const messageConfig = {
-                from: "DEXMN <info@dex.mn>",
+                from: "QUESTDEX <info@questland.io>",
                 to: to,
                 subject: subject,
                 text: message,
