@@ -10,6 +10,7 @@ const {
     Keypair
 } = require('@solana/web3.js');
 const { TOKEN_PROGRAM_ID, ASSOCIATED_TOKEN_PROGRAM_ID } = require('@solana/spl-token');
+const { encodeURL, createQR } = require('@solana/pay');
 const MEMO_PROGRAM_ID = new PublicKey('MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr');
 const QUEST_MINT = (process.env.NODE_ENV == 'production')?'6ybxMQpMgQhtsTLhvHZqk8uqao7kvoexY6e8JmCTqAB1':'AynrJdeB1RfXDhkPJw6PkP3BL4sKm3fehme6A8NcHpKK'
 const methods = {
@@ -201,6 +202,23 @@ const methods = {
         const pubKeyBuffer = bs58.decode(pubkey);
         const verify = nacl.sign.detached.verify(msgData, signatureBuffer, pubKeyBuffer);
         return verify;
+    },
+    createSolPayQRUrl: function({asset, rawAmount, label, message, logId, ref}){
+        const recipient = new PublicKey(utils.configs().questlandWallet.owner);
+        const amount = new BigNumber(rawAmount).div(10**module.exports.assets[asset].decimalsOnChain);
+        const memo = logId.toString();
+        const reference = ref;
+        const splToken = new PublicKey(module.exports.assets[asset].mint);
+        const url = encodeURL({
+            recipient,
+            amount,
+            splToken,
+            reference,
+            label,
+            message,
+            memo,
+        });
+        return {url:url, ref: reference.toBase58()};
     }
 }
 module.exports = methods;

@@ -14,6 +14,9 @@ const methods = {
     getProposalList:async function(req, res){
         let response = new Response();
         const list = await models.Proposal.find({status:{$ne:'pending'}}, {_id:1, title:1, date:1, status:1, signer:1}).sort({createdAt:-1});
+        console.log("##########")
+        console.log(list)
+        console.log("##########")
         response.success = true;
         response.data = list;
         return response;
@@ -41,15 +44,28 @@ const methods = {
     },
     newProposal:async function(req, res){
         let response = new Response();
-        const options = req.body.options.map(op=>{
+        // const options = req.body.options.map(op=>{
+        //     const keyPair = web3.getKeyPair();
+        //     const secret = web3.secretToBase58(keyPair.secretKey);
+        //     return {
+        //         title: op.title,
+        //         pubkey: keyPair.publicKey.toBase58(),
+        //         secret: secret,
+        //         color: op.color
+        //     }
+        // });
+        let options = [];
+        for(let option of req.body.options){
             const keyPair = web3.getKeyPair();
-            return {
-                title: op.title,
+            const secret = web3.secretToBase58(keyPair.secretKey);
+            options.push({
+                title: option.title,
                 pubkey: keyPair.publicKey.toBase58(),
-                secret: web3.secretToBase58(keyPair.secretKey),
-                color: op.color
-            }
-        });
+                secret: secret,
+                color: option.color
+            })
+        }
+
         const proposalSecret = web3.getKeyPair();
         const proposal = await new models.Proposal({
             title: req.body.title,
