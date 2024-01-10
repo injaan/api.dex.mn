@@ -65,7 +65,6 @@ const methods = {
                 color: option.color
             })
         }
-
         const proposalSecret = web3.getKeyPair();
         const proposal = await new models.Proposal({
             title: req.body.title,
@@ -157,7 +156,7 @@ const methods = {
             body: req.body.proposal.body,
             budget: req.body.proposal.budget,
             date: new Date(req.body.proposal.date),
-            options: req.body.proposal.options
+            options: proposal.options
         }});
         response.success = true;
         return response;
@@ -185,6 +184,27 @@ const methods = {
         const votes = await models.Vote.find({proposal: req.params.proposalId});
         response.data = votes;
         response.success = true;
+        return response;
+    },
+    getSolPayQrForVote:async function(req, res){
+        let response = new Response();
+        try {
+            const ref = web3.getKeyPair().publicKey;
+            const qrData = web3.createSolPayQRUrl({
+                to: req.body.to,
+                rawAmount:req.body.amount,
+                asset:req.body.asset,
+                label:"Quest DAO vote",
+                message: `Are you sure to send ${req.body.amount/(10**4)} vote for "${req.body.optionTitle}"`,
+                memo:`{"QIP": "${req.body.proposalId}", "vote":"${req.body.optionTitle}"}`,
+                ref
+            });
+            response.success = true;
+            response.data = {url:qrData.url, ref: qrData.ref};
+        } catch(ex){
+            console.log(ex);
+            response.success = false;
+        }
         return response;
     }
 }

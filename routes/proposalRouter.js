@@ -55,6 +55,26 @@ router.post('/vote',
   })
 );
 
+router.post('/vote/getVoteQr',
+  [
+    check('amount').isNumeric(),
+    check('to').isString(),
+    check('asset').isString(),
+    check('proposalId').isString(),
+    check('optionTitle').isString()
+  ],
+  asyncHandler(
+    async (req, res, next) => {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        const err = utils.throwErr('validation_error', 422, false);
+        errorHandler(err, res, 422, errors.array());
+        return;
+      }
+      res.send(await controller.getSolPayQrForVote(req, res));
+  })
+);
+
 router.post('/updateSignature',
   [
     check('proposal').isString(),

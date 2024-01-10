@@ -14,6 +14,11 @@ const { encodeURL, createQR } = require('@solana/pay');
 const MEMO_PROGRAM_ID = new PublicKey('MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr');
 const QUEST_MINT = (process.env.NODE_ENV == 'production')?'6ybxMQpMgQhtsTLhvHZqk8uqao7kvoexY6e8JmCTqAB1':'AynrJdeB1RfXDhkPJw6PkP3BL4sKm3fehme6A8NcHpKK'
 const methods = {
+    assets: {
+        quest: {name:"Quest", ticker:"QUEST", priceMNT:0.0001, minBuy: 10,"decimalsOnChain": 4,"decimalsOnApp": 4, mineable:false, defaultResourceOnTile:0, minAmountToClaim:0, mineDifficulty: 100000000, mint:(process.env.NODE_ENV==="production")?'6ybxMQpMgQhtsTLhvHZqk8uqao7kvoexY6e8JmCTqAB1':'AynrJdeB1RfXDhkPJw6PkP3BL4sKm3fehme6A8NcHpKK'},
+        aurm: {name:"Aurorium", ticker:"AURM", priceMNT:4.5, minBuy: 10,"decimalsOnChain": 9, "decimalsOnApp": 4, mineable:false, defaultResourceOnTile:0, minAmountToClaim:0, mineDifficulty: 10000, mint: (process.env.NODE_ENV==="production")?'Dzsb9REsrxZ3cG6ucgvE1ATiWMawsRXeaDxDGZcL4gLx':'C7JiTZQ3yDjKtUyMakzvqsMzySoeDzXSsYJhEvKMZTHh'},
+        slrm: {name:"Solarium", ticker:"SLRM", priceMNT:1, minBuy: 4000, "decimalsOnChain": 9, "decimalsOnApp": 4, mineable:true, defaultResourceOnTile:15000000, minAmountToClaim:100000, mineDifficulty: 1, mint: (process.env.NODE_ENV==="production")?'Fh7PGdaNgbWsHX7KpHaxqh2312fm3kYAiKgz4Jz8UcVA':'BQqmiQt3qavUiPUk1She8BrjgcrW8Ub1J6YsqGHWATtc'}
+    },
     connection:null,
     connect: async function(){
         const prodRPCEndpoints = [
@@ -203,10 +208,9 @@ const methods = {
         const verify = nacl.sign.detached.verify(msgData, signatureBuffer, pubKeyBuffer);
         return verify;
     },
-    createSolPayQRUrl: function({asset, rawAmount, label, message, logId, ref}){
-        const recipient = new PublicKey(utils.configs().questlandWallet.owner);
+    createSolPayQRUrl: function({asset, to, rawAmount, label, message, memo, ref}){
+        const recipient = new PublicKey(to);
         const amount = new BigNumber(rawAmount).div(10**module.exports.assets[asset].decimalsOnChain);
-        const memo = logId.toString();
         const reference = ref;
         const splToken = new PublicKey(module.exports.assets[asset].mint);
         const url = encodeURL({
