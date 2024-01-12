@@ -84,122 +84,138 @@ const methods = {
         }
     },
     validateSignatureForNewProposal: async function(signature, proposal){
-        const connection = await module.exports.connect();
-        let txn = await connection.getParsedTransaction(signature, {commitment:'confirmed'});
-        if(!txn){
-            await delay(1000);
-            txn = await connection.getParsedTransaction(signature, {commitment:'confirmed'});
-        }
-        if(!(txn && txn.transaction && txn.transaction.message && txn.transaction.message.instructions.length)){
-            return {success:false};
-        }
-        const memo = txn.transaction.message.instructions.find(instruction=>instruction.programId == MEMO_PROGRAM_ID.toBase58());
-        if(!memo || !memo.parsed){
-            return {success:false};
-        }
-        const idFromMemo = JSON.parse(memo.parsed).QIP;
-        if(idFromMemo != proposal.id){
-            return {success:false};
-        }
-        const mainAccPostTokenBal = txn.meta.postTokenBalances.find(srch=>(srch.owner===proposal.pubkey) && (srch.mint===QUEST_MINT));
-        if(!mainAccPostTokenBal || mainAccPostTokenBal.uiTokenAmount.amount != process.env.DAO_NEW_PROPOSAL_REQUIRED_QUEST){
-            return {success:false};
-        }
-        for (let option of proposal.options){
-            const optionAccTokenBal =  txn.meta.postTokenBalances.find(srch=>(srch.owner===option.pubkey) && (srch.mint===QUEST_MINT));
-            if(!optionAccTokenBal){
+        try {
+            const connection = await module.exports.connect();
+            let txn = await connection.getParsedTransaction(signature, {commitment:'confirmed', maxSupportedTransactionVersion: 0});
+            console.log(txn)
+            if(!txn){
+                await delay(3000);
+                txn = await connection.getParsedTransaction(signature, {commitment:'confirmed', maxSupportedTransactionVersion: 0,});
+            }
+
+            if(!(txn && txn.transaction && txn.transaction.message && txn.transaction.message.instructions.length)){
                 return {success:false};
             }
+            const memo = txn.transaction.message.instructions.find(instruction=>instruction.programId == MEMO_PROGRAM_ID.toBase58());
+            if(!memo || !memo.parsed){
+                return {success:false};
+            }
+            const idFromMemo = JSON.parse(memo.parsed).QIP;
+            if(idFromMemo != proposal.id){
+                return {success:false};
+            }
+            const mainAccPostTokenBal = txn.meta.postTokenBalances.find(srch=>(srch.owner===proposal.pubkey) && (srch.mint===QUEST_MINT));
+            if(!mainAccPostTokenBal || mainAccPostTokenBal.uiTokenAmount.amount != process.env.DAO_NEW_PROPOSAL_REQUIRED_QUEST){
+                return {success:false};
+            }
+            for (let option of proposal.options){
+                const optionAccTokenBal =  txn.meta.postTokenBalances.find(srch=>(srch.owner===option.pubkey) && (srch.mint===QUEST_MINT));
+                if(!optionAccTokenBal){
+                    return {success:false};
+                }
+            }
+            const signer = txn.transaction.message.accountKeys.find(srch=>srch.signer)
+            return {success:true, signer:signer.pubkey.toBase58()};
+        } catch(ex){
+            console.log(ex);
+            return {success:false};
         }
-        const signer = txn.transaction.message.accountKeys.find(srch=>srch.signer)
-        return {success:true, signer:signer.pubkey.toBase58()};
+        
     },
     validateSignatureForVote: async function(signature, proposalModel){
-        const connection = await module.exports.connect();
-        let txn = await connection.getParsedTransaction(signature, {commitment:'confirmed'});
-        if(!txn){
-            await delay(1000);
-            txn = await connection.getParsedTransaction(signature, {commitment:'confirmed'});
-        }
-        if(!(txn && txn.transaction && txn.transaction.message && txn.transaction.message.instructions.length)){
-            return {
-                success:false,
-                msg:"invalid signature"
-            };
-        }
-        const memo = txn.transaction.message.instructions.find(instruction=>instruction.programId == MEMO_PROGRAM_ID.toBase58());
-        if(!memo || !memo.parsed){
-            return {
-                success:false,
-                msg:"invalid signature"
-            };
-        }
-        const idFromMemo = JSON.parse(memo.parsed).QIP;
-        if(!idFromMemo){
-            return {
-                success:false,
-                msg:"invalid signature"
-            };
-        }
-        const tokenIx = txn.transaction.message.instructions.find(instruction=>instruction.programId == TOKEN_PROGRAM_ID.toBase58());
-        if(!tokenIx){
-            return {
-                success:false,
-                msg:"invalid signature"
-            };
-        }
-        const proposal = await proposalModel.findById(idFromMemo);
-        if(!proposal){
-            return {
-                success:false,
-                msg:"invalid signature"
-            };
-        }
-        if(proposal.status != 'voting'){
-            return {
-                success:false,
-                msg:"Санал хураалт эхлээгүй эсвэл дууссан байна"
-            };
-        }
-        if(new Date(proposal.date) < new Date()){
-            await proposal.updateOne({
-                status:'completed'
-            });
-            return {
-                success:false,
-                msg:"Санал хураалтын хугацаа дууссан байна"
-            };
-        }
-        let voteOption;
-        for(let option of proposal.options){
-            const tokenAcc = await module.exports.getAssociatedTokenAddress(option.pubkey, QUEST_MINT);
-            if(tokenAcc.toBase58() == tokenIx.parsed.info.destination){
-                voteOption = option;
-                break;
+        try {
+            const connection = await module.exports.connect();
+            let txn = await connection.getParsedTransaction(signature, {commitment:'confirmed', maxSupportedTransactionVersion: 0});
+            if(!txn){
+                await delay(1000);
+                txn = await connection.getParsedTransaction(signature, {commitment:'confirmed', maxSupportedTransactionVersion: 0});
             }
-        }
-        if(!voteOption){
-            return {
-                success:false,
-                msg:"invalid signature"
-            };
-        }
-        const srcAccInfo = await module.exports.getAccountInfo(tokenIx.parsed.info.source);
-        if(!srcAccInfo){
-            return {
-                success:false,
-                msg:"invalid signature"
-            };
-        }
-        return {
-            success: true,
-            data :{
-                proposal: proposal,
-                votes: BigNumber(tokenIx.parsed.info.amount).div((10**4)).toNumber(),
-                voter:srcAccInfo.info.owner,
-                option: voteOption.pubkey
+            if(!(txn && txn.transaction && txn.transaction.message && txn.transaction.message.instructions.length)){
+                return {
+                    success:false,
+                    msg:"invalid signature"
+                };
             }
-        };
+            const memo = txn.transaction.message.instructions.find(instruction=>instruction.programId == MEMO_PROGRAM_ID.toBase58());
+            if(!memo || !memo.parsed){
+                return {
+                    success:false,
+                    msg:"invalid signature"
+                };
+            }
+            const idFromMemo = JSON.parse(memo.parsed).QIP;
+            if(!idFromMemo){
+                return {
+                    success:false,
+                    msg:"invalid signature"
+                };
+            }
+            const tokenIx = txn.transaction.message.instructions.find(instruction=>instruction.programId == TOKEN_PROGRAM_ID.toBase58());
+            if(!tokenIx){
+                return {
+                    success:false,
+                    msg:"invalid signature"
+                };
+            }
+            const proposal = await proposalModel.findById(idFromMemo);
+            if(!proposal){
+                return {
+                    success:false,
+                    msg:"invalid signature"
+                };
+            }
+            if(proposal.status != 'voting'){
+                return {
+                    success:false,
+                    msg:"Санал хураалт эхлээгүй эсвэл дууссан байна"
+                };
+            }
+            if(new Date(proposal.date) < new Date()){
+                await proposal.updateOne({
+                    status:'completed'
+                });
+                return {
+                    success:false,
+                    msg:"Санал хураалтын хугацаа дууссан байна"
+                };
+            }
+            let voteOption;
+            for(let option of proposal.options){
+                const tokenAcc = await module.exports.getAssociatedTokenAddress(option.pubkey, QUEST_MINT);
+                if(tokenAcc.toBase58() == tokenIx.parsed.info.destination){
+                    voteOption = option;
+                    break;
+                }
+            }
+            if(!voteOption){
+                return {
+                    success:false,
+                    msg:"invalid signature"
+                };
+            }
+            const srcAccInfo = await module.exports.getAccountInfo(tokenIx.parsed.info.source);
+            if(!srcAccInfo){
+                return {
+                    success:false,
+                    msg:"invalid signature"
+                };
+            }
+            return {
+                success: true,
+                data :{
+                    proposal: proposal,
+                    votes: BigNumber(tokenIx.parsed.info.amount).div((10**4)).toNumber(),
+                    voter:srcAccInfo.info.owner,
+                    option: voteOption.pubkey
+                }
+            };
+        } catch(ex){
+            console.log(ex)
+            return {
+                success:false,
+                msg:"invalid signature"
+            };
+        }
     },
     verifyMessage: function(message, signature, pubkey){
         const msgData = new util.TextEncoder().encode(message);
